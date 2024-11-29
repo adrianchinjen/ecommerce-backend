@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { user_role } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -23,15 +23,36 @@ interface UserDetails {
 export class UsersService {
   constructor(private databaseService: DatabaseService) {}
 
-  async checkUserEmail(email: string) {
-    let userExist = false;
-    const userEmail: AuthDetails = await this.databaseService.auth.findUnique({
-      where: { email }
-    });
+  async verifyEmail(email: string) {
+    try {
+      const userEmail: AuthDetails = await this.databaseService.auth.findUnique({
+        where: { email }
+      });
 
-    const isUserExisting = userEmail ? (userExist = true) : userExist;
+      if (userEmail) {
+        return userEmail;
+      }
 
-    return isUserExisting;
+      return userEmail;
+    } catch (error) {
+      throw new ConflictException(error.message);
+    }
+  }
+
+  async verifyUsername(username: string) {
+    try {
+      const userUsername: AuthDetails = await this.databaseService.auth.findUnique({
+        where: { username }
+      });
+
+      if (userUsername) {
+        return userUsername;
+      }
+
+      return userUsername;
+    } catch (error) {
+      throw new ConflictException(error.message);
+    }
   }
 
   async saveUser(userDetails: UserDetails) {
