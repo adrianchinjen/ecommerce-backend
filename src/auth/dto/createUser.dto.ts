@@ -21,3 +21,13 @@ export class CreateUserDto {
   })
   password: string;
 }
+
+// export class LoginUserDto extends PickType(CreateUserDto, ['email', 'password'] as const) {}
+
+export class LoginUserDto {
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
+}
